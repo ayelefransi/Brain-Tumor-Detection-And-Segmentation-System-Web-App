@@ -35,7 +35,7 @@ export default function Home() {
       }, 1000);
 
       // Step 1: Call FastAPI DIRECTLY from the browser (bypasses Node.js 5-min timeout)
-      const fastApiUrl = "http://127.0.0.1:8000";
+      const fastApiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
       const backendRes = await fetch(`${fastApiUrl}/api/predict`, {
         method: "POST",
         body: formData,
