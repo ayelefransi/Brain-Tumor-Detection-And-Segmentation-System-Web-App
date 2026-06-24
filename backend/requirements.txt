@@ -6,3 +6,4 @@ nibabel
 monai
 numpy
 scipy
+Pillow
