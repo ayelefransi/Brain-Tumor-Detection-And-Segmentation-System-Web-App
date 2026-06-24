@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  role      String   @default("DOCTOR")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  patients  Patient[]
+}
+
+model Patient {
+  id          String   @id @default(cuid())
+  patientId   String   @unique
+  name        String
+  age         Int
+  sex         String
+  diagnosis   String   @default("Pending")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  scans       Scan[]
+}
+
+model Scan {
+  id          String   @id @default(cuid())
+  modality    String
+  filePath    String
+  createdAt   DateTime @default(now())
+  patientId   String
+  patient     Patient  @relation(fields: [patientId], references: [id])
+  predictions Prediction[]
+}
+
+model Prediction {
+  id              String   @id @default(cuid())
+  volumeCm3       Float
+  confidence      Float
+  tumorType       String
+  metrics         String
+  segmentationUrl String?
+  createdAt       DateTime @default(now())
+  scanId          String
+  scan            Scan     @relation(fields: [scanId], references: [id])
+}
