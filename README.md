@@ -1,3 +1,11 @@
+---
+title: Brain Tumor API
+emoji: 🧠
+colorFrom: blue
+colorTo: purple
+sdk: docker
+pinned: false
+---
 # Brain Tumor Detection & Segmentation System
 
 A full-stack medical AI application for 3D Brain Tumor segmentation and classification. The system features a modern Next.js frontend with 3D visualization capabilities and a robust FastAPI backend running PyTorch/MONAI inference.
