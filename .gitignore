@@ -21,4 +21,3 @@ ENV/
 .ipynb_checkpoints
 
 # Large files (optional but good practice)
-best_model.pt
