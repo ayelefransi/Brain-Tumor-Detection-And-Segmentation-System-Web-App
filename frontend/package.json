@@ -6,15 +6,17 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "postinstall": "prisma generate"
+    "lint": "eslint"
   },
   "dependencies": {
-    "@prisma/client": "^5.22.0",
+    "@anthropic-ai/sdk": "^0.106.0",
     "@react-three/drei": "^9.122.0",
     "@react-three/fiber": "^8.18.0",
+    "@supabase/ssr": "^0.5.2",
+    "@supabase/supabase-js": "^2.47.0",
     "@types/three": "^0.184.1",
     "chart.js": "^4.5.1",
+    "jspdf": "^4.2.1",
     "lucide-react": "^1.17.0",
     "next": "^14.2.15",
     "react": "^18.3.1",
@@ -29,7 +31,6 @@
     "@types/react-dom": "^18.3.1",
     "eslint": "^8",
     "eslint-config-next": "^14.2.15",
-    "prisma": "^5.22.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

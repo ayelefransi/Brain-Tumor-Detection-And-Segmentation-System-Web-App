@@ -1,56 +1,99 @@
 export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { createServerSupabaseClient } from "@/lib/server";
 
 export async function POST(req: NextRequest) {
   try {
+    const supabase = await createServerSupabaseClient();
+
+    // Get authenticated user
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await req.json();
-    const { patientId, filename, metrics } = body;
+    const { patientId, patientName, filename, metrics } = body;
+
+    // Ensure profile exists to prevent foreign key constraint violations
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("id", user.id)
+      .single();
+
+    if (!profile) {
+      const { error: profileError } = await supabase.from("profiles").insert({
+        id: user.id,
+        full_name: user.user_metadata?.full_name || "Doctor",
+        role: "DOCTOR",
+      });
+      if (profileError) {
+        console.error("Profile auto-insert error:", profileError);
+      }
+    }
 
     // Find or create the patient
-    let patient = await prisma.patient.findUnique({
-      where: { patientId: patientId || "PT-88392" }
-    });
+    let { data: patient } = await supabase
+      .from("patients")
+      .select("id")
+      .eq("patient_id", patientId)
+      .single();
 
     if (!patient) {
-      let user = await prisma.user.findFirst();
-      if (!user) {
-         user = await prisma.user.create({
-             data: { email: "doctor@neuroscan.com", name: "Dr. Smith", role: "DOCTOR" }
-         });
+      const { data: newPatient, error: patientError } = await supabase
+        .from("patients")
+        .insert({
+          patient_id: patientId || "PT-00001",
+          name: patientName || "Unknown Patient",
+          age: 0,
+          sex: "Unknown",
+          user_id: user.id,
+        })
+        .select("id")
+        .single();
+
+      if (patientError) {
+        console.error("Patient insert error:", patientError);
+        return NextResponse.json({ error: patientError.message }, { status: 500 });
       }
-      
-      patient = await prisma.patient.create({
-        data: {
-          patientId: patientId || "PT-88392",
-          name: "Elias Jenkins",
-          age: 45,
-          sex: "M",
-          userId: user.id
-        }
-      });
+      patient = newPatient;
     }
 
     // Save scan
-    const scan = await prisma.scan.create({
-      data: {
+    const { data: scan, error: scanError } = await supabase
+      .from("scans")
+      .insert({
         modality: "MRI-T1ce",
-        filePath: filename || "uploaded_scan.nii.gz",
-        patientId: patient.id,
-      }
-    });
+        file_path: filename || "uploaded_scan.nii.gz",
+        patient_id: patient!.id,
+      })
+      .select("id")
+      .single();
+
+    if (scanError) {
+      console.error("Scan insert error:", scanError);
+      return NextResponse.json({ error: scanError.message }, { status: 500 });
+    }
 
     // Save prediction
-    const prediction = await prisma.prediction.create({
-      data: {
-        volumeCm3: metrics.volume_cm3,
+    const { data: prediction, error: predError } = await supabase
+      .from("predictions")
+      .insert({
+        volume_cm3: metrics.volume_cm3,
         confidence: metrics.confidence,
-        tumorType: metrics.type,
-        metrics: JSON.stringify(metrics.metrics),
-        segmentationUrl: "local",
-        scanId: scan.id
-      }
-    });
+        tumor_type: metrics.type,
+        metrics: metrics.metrics || {},
+        segmentation_url: "local",
+        scan_id: scan!.id,
+      })
+      .select()
+      .single();
+
+    if (predError) {
+      console.error("Prediction insert error:", predError);
+      return NextResponse.json({ error: predError.message }, { status: 500 });
+    }
 
     return NextResponse.json({ status: "success", prediction });
 

@@ -130,10 +130,11 @@ class BrainTumorInference:
             
             total_vol = wt_vol
 
-            # Extract slices for frontend
-            img_tensor = input_tensor[0, 0] # (128, 128, 64)
+            # Extract ALL slices for each plane (stride 2 for performance)
+            img_tensor = input_tensor[0, 0]  # (128, 128, 64)
             
-            def encode_slice(img_slice, m_slice):
+            def encode_slice_jpeg(img_slice, m_slice):
+                """Encode a single slice as 128x128 JPEG base64."""
                 i_np = (img_slice.cpu().numpy() * 255).astype(np.uint8)
                 m_np = m_slice.cpu().numpy()
                 rgb = np.stack([i_np, i_np, i_np], axis=-1)
@@ -143,18 +144,31 @@ class BrainTumorInference:
                 red_overlay[:,:,0] = 255
                 alpha = 0.4
                 mask_idx = m_np > 0
-                
                 rgb[mask_idx] = rgb[mask_idx] * (1 - alpha) + red_overlay[mask_idx] * alpha
                 
                 im = Image.fromarray(rgb.astype(np.uint8))
-                im = im.resize((256, 256), Image.NEAREST)
+                im = im.resize((128, 128), Image.NEAREST)
                 buffered = BytesIO()
-                im.save(buffered, format="PNG")
-                return "data:image/png;base64," + base64.b64encode(buffered.getvalue()).decode("utf-8")
-                
-            axial_slice = encode_slice(img_tensor[:, :, 32], wt_mask[:, :, 32])
-            coronal_slice = encode_slice(img_tensor[:, 64, :], wt_mask[:, 64, :])
-            sagittal_slice = encode_slice(img_tensor[64, :, :], wt_mask[64, :, :])
+                im.save(buffered, format="JPEG", quality=70)
+                return "data:image/jpeg;base64," + base64.b64encode(buffered.getvalue()).decode("utf-8")
+            
+            # Axial slices: iterate over depth axis (axis 2), shape is (128, 128, D)
+            d_size = img_tensor.shape[2]  # 64
+            h_size = img_tensor.shape[0]  # 128
+            w_size = img_tensor.shape[1]  # 128
+            
+            stride = 2
+            axial_slices = []
+            for z in range(0, d_size, stride):
+                axial_slices.append(encode_slice_jpeg(img_tensor[:, :, z], wt_mask[:, :, z]))
+            
+            coronal_slices = []
+            for y in range(0, h_size, stride):
+                coronal_slices.append(encode_slice_jpeg(img_tensor[y, :, :], wt_mask[y, :, :]))
+            
+            sagittal_slices = []
+            for x in range(0, w_size, stride):
+                sagittal_slices.append(encode_slice_jpeg(img_tensor[:, x, :], wt_mask[:, x, :]))
             
             # Class probabilities
             cls_prob_list = cls_probs[0].cpu().tolist()
@@ -181,9 +195,15 @@ class BrainTumorInference:
                     "et_dice": round(float(seg_probs[0, 2].mean().item()), 3)
                 },
                 "images": {
-                    "axial": axial_slice,
-                    "coronal": coronal_slice,
-                    "sagittal": sagittal_slice
+                    "axial": axial_slices[len(axial_slices)//2] if axial_slices else None,
+                    "coronal": coronal_slices[len(coronal_slices)//2] if coronal_slices else None,
+                    "sagittal": sagittal_slices[len(sagittal_slices)//2] if sagittal_slices else None,
+                    "axial_slices": axial_slices,
+                    "coronal_slices": coronal_slices,
+                    "sagittal_slices": sagittal_slices,
+                    "axial_count": len(axial_slices),
+                    "coronal_count": len(coronal_slices),
+                    "sagittal_count": len(sagittal_slices),
                 }
             }
 
