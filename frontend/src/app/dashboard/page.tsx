@@ -168,7 +168,7 @@ export default function DashboardPage() {
             </p>
           </div>
           <a href="/viewer" className="dash-cta">
-            <BrainCircuit size={16} />
+            <img src="/logo.png" alt="Logo" style={{ width: 16, height: 16, objectFit: 'contain' }} />
             New Scan
             <ArrowRight size={14} />
           </a>
@@ -210,7 +210,7 @@ export default function DashboardPage() {
 
           <div className="dash-stat-card">
             <div className="dash-stat-icon dsi-red">
-              <BrainCircuit size={20} />
+              <img src="/logo.png" alt="Logo" style={{ width: 20, height: 20, objectFit: 'contain' }} />
             </div>
             <div className="dash-stat-info">
               <div className="dash-stat-val dash-stat-val-sm">
@@ -232,7 +232,7 @@ export default function DashboardPage() {
 
             {predictions.length === 0 ? (
               <div className="dash-empty">
-                <BrainCircuit size={32} />
+                <img src="/logo.png" alt="Logo" style={{ width: 32, height: 32, objectFit: 'contain' }} />
                 <p>No predictions yet. Upload a scan to get started.</p>
                 <a href="/viewer" className="dash-cta-sm">
                   Go to Viewer

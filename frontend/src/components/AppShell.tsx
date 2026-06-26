@@ -5,10 +5,13 @@ import { useAuth } from "@/components/AuthProvider";
 import { useRouter } from "next/navigation";
 import {
   LayoutDashboard,
-  BrainCircuit,
   LogOut,
   User,
 } from "lucide-react";
+
+const LogoIcon = ({ size }: { size: number }) => (
+  <img src="/logo.png" alt="Logo" style={{ width: size, height: size, objectFit: 'contain' }} />
+);
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -26,7 +29,7 @@ export default function AppShell({ children }: AppShellProps) {
 
   const navItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/viewer", label: "Viewer", icon: BrainCircuit },
+    { href: "/viewer", label: "Viewer", icon: LogoIcon },
   ];
 
   return (
@@ -35,7 +38,9 @@ export default function AppShell({ children }: AppShellProps) {
       <nav className="app-nav">
         <div className="app-nav-top">
           <div className="app-nav-logo">
-            <div className="logo-icon">NS</div>
+            <div className="logo-icon">
+              <img src="/logo.png" alt="NeuroScan AI Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            </div>
             <span className="app-nav-logo-text">
               NeuroScan <span>AI</span>
             </span>

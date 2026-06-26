@@ -49,8 +49,8 @@ export default function SignupPage() {
         {/* Left - Branding Panel */}
         <div className="auth-brand">
           <div className="auth-brand-content">
-            <div className="auth-brand-icon">
-              <BrainCircuit size={48} />
+            <div className="auth-brand-icon" style={{ overflow: 'hidden' }}>
+              <img src="/logo.png" alt="NeuroScan AI Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
             </div>
             <h1 className="auth-brand-title">
               NeuroScan <span>AI</span>

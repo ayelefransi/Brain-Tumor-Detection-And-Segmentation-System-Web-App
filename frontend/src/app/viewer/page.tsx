@@ -151,7 +151,7 @@ export default function ViewerPage() {
               className={`nav-btn ${activeTab === "training" ? "active" : ""}`}
               onClick={() => setActiveTab("training")}
             >
-              <BrainCircuit size={14} className="inline mr-2" />
+              <img src="/logo.png" alt="Logo" style={{ width: 14, height: 14, objectFit: 'contain' }} className="inline mr-2" />
               Model
             </button>
           </div>

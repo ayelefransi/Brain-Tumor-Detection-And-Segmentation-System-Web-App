@@ -25,8 +25,11 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "NeuroScan AI — Brain Tumor Detection & Segmentation",
+  title: "Neuroscan AI",
   description: "Advanced Brain Tumor Detection & Segmentation System",
+  icons: {
+    icon: "/logo.png",
+  },
 };
 
 export default function RootLayout({

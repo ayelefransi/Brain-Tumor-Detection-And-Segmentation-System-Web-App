@@ -127,15 +127,10 @@ body {
 .logo-icon {
   width: 32px;
   height: 32px;
-  background: var(--accent-gradient);
-  color: #FFFFFF;
-  border-radius: 10px;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  font-weight: 900;
-  box-shadow: 0 4px 16px rgba(14, 165, 233, 0.4);
   position: relative;
   overflow: hidden;
 }
@@ -1230,14 +1225,11 @@ input[type=range]::-webkit-slider-thumb:hover {
 .auth-brand-icon {
   width: 72px;
   height: 72px;
-  background: var(--accent-gradient);
-  border-radius: 20px;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #FFFFFF;
   margin-bottom: 32px;
-  box-shadow: 0 10px 25px rgba(14, 165, 233, 0.4);
 }
 
 .auth-brand-title {
