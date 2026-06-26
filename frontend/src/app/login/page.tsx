@@ -35,7 +35,7 @@ export default function LoginPage() {
         <div className="auth-orb auth-orb-1"></div>
         <div className="auth-orb auth-orb-2"></div>
         <div className="auth-orb auth-orb-3"></div>
-        <div className="cyber-grid"></div>
+        <div className="medical-grid"></div>
       </div>
 
       <div className="auth-container">

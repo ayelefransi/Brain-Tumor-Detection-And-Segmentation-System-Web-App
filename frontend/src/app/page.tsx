@@ -24,7 +24,7 @@ export default function Home() {
       <div className="auth-bg">
         <div className="auth-orb auth-orb-1"></div>
         <div className="auth-orb auth-orb-2"></div>
-        <div className="cyber-grid"></div>
+        <div className="medical-grid"></div>
       </div>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh" }}>
         <div className="auth-spinner"></div>
